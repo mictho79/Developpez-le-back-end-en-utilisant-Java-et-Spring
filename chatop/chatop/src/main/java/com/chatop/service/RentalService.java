@@ -16,81 +16,96 @@ import java.util.List;
 @Service
 public class RentalService {
 
-    @Autowired
-    private RentalRepository rentalRepository;
+  @Autowired
+  private RentalRepository rentalRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+  @Autowired
+  private UserRepository userRepository;
 
-    public List<RentalDTO> getAllRentals() {
-        return rentalRepository.findAll().stream()
-                .map(r -> new RentalDTO(
-                        r.getId(),
-                        r.getName(),
-                        r.getSurface(),
-                        r.getPrice(),
-                        r.getPicture(),
-                        r.getDescription(),
-                        r.getOwner_id(),
-                        r.getCreated_at(),
-                        r.getUpdated_at()
-                ))
-                .toList();
-    }
+  /**
+   * Retourne toutes les locations disponibles, converties en DTO.
+   */
+  public List<RentalDTO> getAllRentals() {
+    return rentalRepository.findAll().stream()
+      .map(r -> new RentalDTO(
+        r.getId(),
+        r.getName(),
+        r.getSurface(),
+        r.getPrice(),
+        r.getPicture(),
+        r.getDescription(),
+        r.getOwner_id(),
+        r.getCreated_at(),
+        r.getUpdated_at()
+      ))
+      .toList();
+  }
 
-    public RentalDTO createRental(RentalRequestDTO dto, String ownerEmail) {
-        User owner = userRepository.findByEmail(ownerEmail);
+  /**
+   * Crée une nouvelle annonce de location à partir d’un DTO et de l'email du propriétaire.
+   */
+  public RentalDTO createRental(RentalRequestDTO dto, String ownerEmail) {
+    User owner = userRepository.findByEmail(ownerEmail);
 
-        Rental rental = new Rental();
-        rental.setName(dto.getName());
-        rental.setSurface(dto.getSurface());
-        rental.setPrice(dto.getPrice());
-        rental.setPicture(dto.getPicture());
-        rental.setDescription(dto.getDescription());
-        rental.setOwner_id(owner.getId());
-        rental.setCreated_at(LocalDateTime.now());
-        rental.setUpdated_at(LocalDateTime.now());
+    Rental rental = new Rental();
+    rental.setName(dto.getName());
+    rental.setSurface(dto.getSurface());
+    rental.setPrice(dto.getPrice());
+    rental.setPicture(dto.getPicture());
+    rental.setDescription(dto.getDescription());
+    rental.setOwner_id(owner.getId());
+    rental.setCreated_at(LocalDateTime.now());
+    rental.setUpdated_at(LocalDateTime.now());
 
-        Rental saved = rentalRepository.save(rental);
+    Rental saved = rentalRepository.save(rental);
 
-        return new RentalDTO(
-                saved.getId(),
-                saved.getName(),
-                saved.getSurface(),
-                saved.getPrice(),
-                saved.getPicture(),
-                saved.getDescription(),
-                saved.getOwner_id(),
-                saved.getCreated_at(),
-                saved.getUpdated_at()
-        );
-    }
-    public RentalDTO getRentalById(Long id) {
-        Rental rental = rentalRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Rental not found"));
+    return new RentalDTO(
+      saved.getId(),
+      saved.getName(),
+      saved.getSurface(),
+      saved.getPrice(),
+      saved.getPicture(),
+      saved.getDescription(),
+      saved.getOwner_id(),
+      saved.getCreated_at(),
+      saved.getUpdated_at()
+    );
+  }
 
-        return new RentalDTO(
-                rental.getId(),
-                rental.getName(),
-                rental.getSurface(),
-                rental.getPrice(),
-                rental.getPicture(),
-                rental.getDescription(),
-                rental.getOwner_id(),
-                rental.getCreated_at(),
-                rental.getUpdated_at()
-        );
-    }
-    public void updateRental(Long id, RentalUpdateDTO dto) {
-        Rental rental = rentalRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Rental not found"));
+  /**
+   * Récupère une annonce de location par son ID.
+   */
+  public RentalDTO getRentalById(Long id) {
+    Rental rental = rentalRepository.findById(id)
+      .orElseThrow(() -> new RuntimeException("Rental not found"));
 
-        rental.setName(dto.getName());
-        rental.setSurface(dto.getSurface());
-        rental.setPrice(dto.getPrice());
-        rental.setDescription(dto.getDescription());
-        rental.setUpdated_at(LocalDateTime.now());
+    return new RentalDTO(
+      rental.getId(),
+      rental.getName(),
+      rental.getSurface(),
+      rental.getPrice(),
+      rental.getPicture(),
+      rental.getDescription(),
+      rental.getOwner_id(),
+      rental.getCreated_at(),
+      rental.getUpdated_at()
+    );
+  }
 
-        rentalRepository.save(rental);
-    }
+  /**
+   * Met à jour une annonce existante.
+   * Le champ image n’est pas modifiable ici.
+   */
+  public void updateRental(Long id, RentalUpdateDTO dto) {
+    Rental rental = rentalRepository.findById(id)
+      .orElseThrow(() -> new RuntimeException("Rental not found"));
+
+    rental.setName(dto.getName());
+    rental.setSurface(dto.getSurface());
+    rental.setPrice(dto.getPrice());
+    rental.setDescription(dto.getDescription());
+    rental.setUpdated_at(LocalDateTime.now());
+
+    rentalRepository.save(rental);
+  }
 }

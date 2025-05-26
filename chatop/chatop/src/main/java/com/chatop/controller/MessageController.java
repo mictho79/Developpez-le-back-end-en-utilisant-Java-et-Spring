@@ -16,17 +16,22 @@ import java.util.Map;
 @Tag(name = "Messages", description = "Envoi de messages liés aux annonces")
 public class MessageController {
 
-    @Autowired
-    private MessageService messageService;
+  @Autowired
+  private MessageService messageService;
 
-    @PostMapping
-    @Operation(summary = "Envoyer un message", description = "Envoie un message à propos d’une annonce (location).")
-    public ResponseEntity<Map<String, String>> sendMessage(
-            @RequestBody MessageRequestDTO dto,
-            Authentication authentication
-    ) {
-        String email = (String) authentication.getPrincipal();
-        messageService.sendMessage(email, dto);
-        return ResponseEntity.ok(Map.of("message", "Message sent with success !"));
-    }
+  /**
+   * Envoie un message (POST /api/messages)
+   * Authentifie l'expéditeur via le token JWT.
+   */
+  @PostMapping
+  @Operation(summary = "Envoyer un message", description = "Envoie un message à propos d’une annonce (location).")
+  public ResponseEntity<Map<String, String>> sendMessage(
+    @RequestBody MessageRequestDTO dto,
+    Authentication authentication
+  ) {
+    String email = (String) authentication.getPrincipal(); // récupère l'email du JWT
+    messageService.sendMessage(email, dto); // envoie le message via le service
+    return ResponseEntity.ok(Map.of("message", "Message sent with success !"));
+  }
 }
+

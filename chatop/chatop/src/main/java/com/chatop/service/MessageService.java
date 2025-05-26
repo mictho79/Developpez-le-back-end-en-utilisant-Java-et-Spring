@@ -11,30 +11,38 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-
 @Service
 public class MessageService {
 
-    @Autowired
-    private MessageRepository messageRepository;
+  @Autowired
+  private MessageRepository messageRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+  @Autowired
+  private UserRepository userRepository;
 
-    @Autowired
-    private RentalRepository rentalRepository;
+  @Autowired
+  private RentalRepository rentalRepository;
 
-    public void sendMessage(String email, MessageRequestDTO dto) {
-        User sender = userRepository.findByEmail(email);
-        Rental rental = rentalRepository.findById(dto.getRental_id())
-                .orElseThrow(() -> new RuntimeException("Rental not found"));
+  /**
+   * Envoie un message en liant un utilisateur et une annonce de location.
+   * Les données sont extraites du DTO et de l’email JWT.
+   */
+  public void sendMessage(String email, MessageRequestDTO dto) {
+    // Récupère l’expéditeur à partir de l’email (injecté via JWT)
+    User sender = userRepository.findByEmail(email);
 
-        Message msg = new Message();
-        msg.setMessage(dto.getMessage());
-        msg.setSender(sender);
-        msg.setRental(rental);
-        msg.setCreatedAt(LocalDateTime.now());
+    // Vérifie que la location existe
+    Rental rental = rentalRepository.findById(dto.getRental_id())
+      .orElseThrow(() -> new RuntimeException("Rental not found"));
 
-        messageRepository.save(msg);
-    }
+    // Création du message à partir du DTO
+    Message msg = new Message();
+    msg.setMessage(dto.getMessage());
+    msg.setSender(sender);
+    msg.setRental(rental);
+    msg.setCreatedAt(LocalDateTime.now());
+
+    // Enregistrement en base
+    messageRepository.save(msg);
+  }
 }

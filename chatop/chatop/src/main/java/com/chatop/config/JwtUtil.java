@@ -4,10 +4,10 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import org.springframework.stereotype.Component;
 
-@Component // Cette classe peut être injectée partout dans Spring
+@Component
 public class JwtUtil {
 
-  private final String secret = "123456789"; // Clé secrète pour signer/valider les tokens (à externaliser idéalement)
+  private final String secret = "123456789"; // Clé secrète pour signer/valider les tokens
 
   /**
    * Extrait l'email (sujet) à partir d'un token JWT

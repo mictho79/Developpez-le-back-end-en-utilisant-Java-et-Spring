@@ -12,7 +12,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Collections;
 
-@Component // Ce filtre sera détecté automatiquement par Spring
+@Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
   private final JwtUtil jwtUtil;

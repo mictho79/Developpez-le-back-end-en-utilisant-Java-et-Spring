@@ -8,8 +8,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
 
 import java.util.List;
 
@@ -28,32 +28,33 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     return http
-      .csrf(csrf -> csrf.disable()) // Désactive CSRF car l'API est utilisée via Angular (pas un formulaire HTML natif)
-      .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Applique la config CORS
+      .csrf(csrf -> csrf.disable())
+      .cors(cors -> cors.configurationSource(corsConfigurationSource()))
       .authorizeHttpRequests(auth -> auth
         .requestMatchers(
           "/api/auth/login",
           "/api/auth/register",
-          "/uploads/**",            // Laisse l’accès aux images
-          "/swagger-ui/**",         // Swagger
+          "/uploads/**",
+          "/swagger-ui/**",
           "/swagger-ui.html",
           "/v3/api-docs/**"
-        ).permitAll()                    // Ces routes sont publiques
-        .anyRequest().authenticated()    // Le reste nécessite un JWT valide
+        ).permitAll()
+        .anyRequest().authenticated()
       )
-      .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class) // Ajoute le filtre JWT
+      .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
       .build();
   }
 
   /**
-   * Déclare une configuration CORS (origines, méthodes, headers autorisés)
+   * Déclare une configuration CORS compatible avec les appels Angular
    */
   @Bean
-  public UrlBasedCorsConfigurationSource corsConfigurationSource() {
+  public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration config = new CorsConfiguration();
     config.setAllowedOrigins(List.of("http://localhost:4200"));
     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     config.setAllowedHeaders(List.of("*"));
+    config.setExposedHeaders(List.of("Authorization")); 
     config.setAllowCredentials(true);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -62,10 +63,10 @@ public class SecurityConfig {
   }
 
   /**
-   * Déclare l'encodeur de mot de passe BCrypt pour sécuriser les mots de passe en base
+   * Déclare l'encodeur de mot de passe BCrypt
    */
   @Bean
   public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder(); // BCrypt est robuste et recommandé pour stocker des mots de passe
+    return new BCryptPasswordEncoder();
   }
 }

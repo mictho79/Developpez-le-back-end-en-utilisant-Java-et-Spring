@@ -18,7 +18,9 @@ public class Rental {
     private int price;
     private String picture;
     private String description;
-    private Long owner_id;
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private User owner;
 
     private LocalDateTime created_at = LocalDateTime.now();
     private LocalDateTime updated_at = LocalDateTime.now();

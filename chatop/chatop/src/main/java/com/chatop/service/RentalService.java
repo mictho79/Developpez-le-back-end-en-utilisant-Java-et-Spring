@@ -34,7 +34,7 @@ public class RentalService {
         r.getPrice(),
         r.getPicture(),
         r.getDescription(),
-        r.getOwner_id(),
+        r.getOwner().getId(),
         r.getCreated_at(),
         r.getUpdated_at()
       ))
@@ -53,7 +53,7 @@ public class RentalService {
     rental.setPrice(dto.getPrice());
     rental.setPicture(dto.getPicture());
     rental.setDescription(dto.getDescription());
-    rental.setOwner_id(owner.getId());
+    rental.setOwner(owner);
     rental.setCreated_at(LocalDateTime.now());
     rental.setUpdated_at(LocalDateTime.now());
 
@@ -66,7 +66,7 @@ public class RentalService {
       saved.getPrice(),
       saved.getPicture(),
       saved.getDescription(),
-      saved.getOwner_id(),
+      saved.getOwner().getId(),
       saved.getCreated_at(),
       saved.getUpdated_at()
     );
@@ -86,7 +86,7 @@ public class RentalService {
       rental.getPrice(),
       rental.getPicture(),
       rental.getDescription(),
-      rental.getOwner_id(),
+      rental.getOwner().getId(),
       rental.getCreated_at(),
       rental.getUpdated_at()
     );

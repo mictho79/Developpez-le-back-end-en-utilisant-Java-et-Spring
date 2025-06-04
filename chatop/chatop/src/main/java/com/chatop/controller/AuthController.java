@@ -40,8 +40,8 @@ public class AuthController {
   @Operation(summary = "Inscription d’un utilisateur", description = "Crée un compte utilisateur à partir des données fournies.")
   public ResponseEntity<?> register(@RequestBody User user) {
     User savedUser = userService.saveUser(user);
-    String token = jwtUtil.generateToken(savedUser.getEmail()); // 🔐 Génère le token
-    return ResponseEntity.ok(new LoginResponseDTO(token)); // 🔁 Renvoie le même format que /login
+    String token = jwtUtil.generateToken(savedUser.getEmail()); //  Génère le token
+    return ResponseEntity.ok(new LoginResponseDTO(token)); //  Renvoie le même format que /login
   }
 
   /**

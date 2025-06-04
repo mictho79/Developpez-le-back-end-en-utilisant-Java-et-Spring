@@ -81,9 +81,19 @@ public class RentalController {
   /**
    * Met à jour une location (PUT /api/rentals/{id})
    */
-  @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PutMapping("/{id}")
   @Operation(summary = "Mettre à jour une location", description = "Modifie les données d’une annonce de location existante.")
+  //pour le swagger
   public ResponseEntity<Map<String, String>> updateRental(
+    @PathVariable Long id,
+    @RequestBody RentalUpdateDTO dto
+  ) {
+    rentalService.updateRental(id, dto);
+    return ResponseEntity.ok(Map.of("message", "Rental updated !"));
+  }
+  // pour le front
+  @PutMapping(path = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<?> updateRentalForm(
     @PathVariable Long id,
     @RequestParam("name") String name,
     @RequestParam("surface") int surface,
@@ -95,8 +105,7 @@ public class RentalController {
     dto.setSurface(surface);
     dto.setPrice(price);
     dto.setDescription(description);
-
     rentalService.updateRental(id, dto);
-    return ResponseEntity.ok(Map.of("message", "Rental updated !"));
+    return ResponseEntity.ok(Map.of("message", "Mise à jour OK via formulaire"));
   }
 }

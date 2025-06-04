@@ -8,6 +8,8 @@ import com.chatop.model.User;
 import com.chatop.repository.RentalRepository;
 import com.chatop.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -100,6 +102,15 @@ public class RentalService {
     Rental rental = rentalRepository.findById(id)
       .orElseThrow(() -> new RuntimeException("Rental not found"));
 
+    // Vérifie le propriétaire connecté
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String currentUserEmail = authentication.getName();
+    User currentUser = userRepository.findByEmail(currentUserEmail);
+    if (!rental.getOwner().getId().equals(currentUser.getId())) {
+      throw new RuntimeException("Accès interdit : vous n'êtes pas le propriétaire de cette annonce");
+    }
+
+    // Mise à jour autorisée
     rental.setName(dto.getName());
     rental.setSurface(dto.getSurface());
     rental.setPrice(dto.getPrice());
